@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "bloomily-app",
+    "name": "Bloomily",
     "slug": "bloomily-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -13,13 +13,15 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "bundleIdentifier": "com.smooreii.bloomilyapp",
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.smooreii.bloomilyapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
