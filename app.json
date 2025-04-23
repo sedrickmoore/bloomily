@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#90ee90"
     },
     "ios": {
       "bundleIdentifier": "com.smooreii.bloomilyapp",
@@ -19,12 +19,19 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#90ee90"
       },
       "package": "com.smooreii.bloomilyapp"
     },
+    "androidNavigationBar": {
+      "backgroundColor": "#90ee90",
+      "barStyle": "dark-content"
+    },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
