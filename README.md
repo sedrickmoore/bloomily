@@ -27,4 +27,4 @@
 
 More updates coming soon!
 
-<img src="./assets/screenshots/Bloomily_Coming_Soon.png" alt="Screenshot" width="400"/>
+<img src="./assets/screenshots/Bloomily_Coming_Soon.png" alt="Screenshot" width="250"/>
