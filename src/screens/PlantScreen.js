@@ -8,13 +8,23 @@ import {
 } from "react-native-safe-area-context";
 import { Audio } from "expo-av";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, FlatList } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  ScrollView,
+  Dimensions,
+} from "react-native";
 import { ActivityIndicator } from "react-native";
 import { setBackgroundColorAsync } from "expo-system-ui";
 import { supabase } from "../../lib/supabase";
 import { formatDate } from "../utils/formatDate";
+import { RFValue } from "react-native-responsive-fontsize";
 
 export default function PlantScreen() {
+  const screenWidth = Dimensions.get("window").width;
+
   const [fontsLoaded] = useFonts({
     PressStart2P: require("../../assets/fonts/PressStart2P-Regular.ttf"),
     Nunio: require("../../assets/fonts/Nunito-VariableFont_wght.ttf"),
@@ -81,63 +91,77 @@ export default function PlantScreen() {
   }, [locations]);
 
   useEffect(() => {
-    setBackgroundColorAsync("lightgreen");
+    setBackgroundColorAsync("#014421");
   }, []);
 
-  if (!fontsLoaded) {
-    return <ActivityIndicator size="large" />;
+  if (!fontsLoaded || !plants) {
+    return (
+      <View style={[styles.container, { backgroundColor: "#014421" }]}>
+        <ActivityIndicator size="large" color="#B8860B" />
+        <StatusBar style="auto" />
+      </View>
+    );
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Welcome to Bloomily!</Text>
-      <View style={{ height: "100%" }}>
+      <Text style={styles.title}>Your Plants</Text>
+      <View style={{ height: "100%", width: "100%" }}>
         <FlatList
+          horizontal
+          pagingEnabled
+          snapToInterval={screenWidth}
+          decelerationRate="fast"
+          showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: "center",
+            paddingVertical: "50%",
+            // paddingLeft: "10%",
             alignItems: "center",
+            // gap: "5%",
           }}
           data={plants}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Text style={styles.body_text}>
-                <Text style={{ fontWeight: "bold", color: "#FF6D89" }}>
-                  Name:
-                </Text>{" "}
-                {item.nickname || item.plant_ref.common_name}
-              </Text>
-              <Text style={styles.body_text}>
-                <Text style={{ fontWeight: "bold", color: "#FF6D89" }}>
-                  Scientific Name:
-                </Text>{" "}
-                {item.plant_ref.scientific_name}
-              </Text>
-              <Text style={styles.body_text}>
-                <Text style={{ fontWeight: "bold", color: "#FF6D89" }}>
-                  Plant Type:
-                </Text>{" "}
-                {item.plant_ref.plant_type}
-              </Text>
-              <Text style={styles.body_text}>
-                <Text style={{ fontWeight: "bold", color: "#FF6D89" }}>
-                  Location:
-                </Text>{" "}
-                {locationsMap.get(item.location_id)}
-              </Text>
-              <Text style={styles.body_text}>
-                <Text style={{ fontWeight: "bold", color: "#FF6D89" }}>
-                  Last watered:
-                </Text>{" "}
-                {item.last_watered ? formatDate(item.last_watered) : "N/A"}
-              </Text>
-              <Text style={styles.body_text}>
-                <Text style={{ fontWeight: "bold", color: "#FF6D89" }}>
-                  Watering Flag:
-                </Text>{" "}
-                {item.watering_flag}
-              </Text>
+            <View style={[styles.card, { width: screenWidth,}]}>
+              <ScrollView style={styles.card_text_box}>
+                <Text style={styles.body_text}>
+                  <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
+                    Name:
+                  </Text>{" "}
+                  {item.nickname || item.plant_ref.common_name}
+                </Text>
+                <Text style={styles.body_text}>
+                  <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
+                    Scientific Name:
+                  </Text>{" "}
+                  {item.plant_ref.scientific_name}
+                </Text>
+                <Text style={styles.body_text}>
+                  <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
+                    Plant Type:
+                  </Text>{" "}
+                  {item.plant_ref.plant_type}
+                </Text>
+                <Text style={styles.body_text}>
+                  <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
+                    Location:
+                  </Text>{" "}
+                  {locationsMap.get(item.location_id)}
+                </Text>
+                <Text style={styles.body_text}>
+                  <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
+                    Last watered:
+                  </Text>{" "}
+                  {item.last_watered ? formatDate(item.last_watered) : "N/A"}
+                </Text>
+                <Text style={styles.body_text}>
+                  <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
+                    Watering Flag:
+                  </Text>{" "}
+                  {item.watering_flag}
+                </Text>
+              </ScrollView>
+              
             </View>
           )}
         />
@@ -150,35 +174,37 @@ export default function PlantScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "lightgreen",
+    backgroundColor: "#014421",
     alignItems: "center",
   },
   title: {
     fontFamily: "PressStart2P",
-    fontSize: 16,
+    fontSize: RFValue(24),
     textAlign: "center",
     paddingHorizontal: 20,
     paddingVertical: 20,
-    color: "#FF6D89",
+    color: "#B8860B",
   },
 
   body_text: {
     fontFamily: "Quicksand",
-    fontSize: 13,
+    fontSize: RFValue(13),
     textAlign: "left",
     paddingHorizontal: 20,
-    color: "#ADFF2F",
+    color: "#DAA520",
   },
   card: {
-    backgroundColor: "#2E8B57",
-    padding: 16,
-    alignSelf: "center",
     marginVertical: 8,
-    borderRadius: 8,
-    width: 300,
-    shadowColor: "#00FF7F",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#154406",
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
   },
+  card_text_box: {
+    backgroundColor: "#033500",
+    width: "90%",
+    borderRadius: 8,
+  }
 });

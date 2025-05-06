@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View, StyleSheet, Pressable, Text, Button } from "react-native";
 import { supabase } from "../../lib/supabase";
 import PlantScreen from "../screens/PlantScreen";
+import HomeScreen from "../screens/HomeScreen";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
@@ -18,10 +19,20 @@ export default function UserTab({ route, navigation }) {
         borderTopColor: "transparent",
       },
       tabBarActiveTintColor: "#FF6D89",
-      tabBarInactiveTintColor: "#FFE4E1",
+      tabBarInactiveTintColor: "#B8860B",
     }}
-    initialRouteName="Plants"
+    initialRouteName="Home"
   >
+     <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="home" size={size} color={color} />
+            ),
+            tabBarShowLabel: false,
+          }}
+      />
       <Tab.Screen
         name="Plants"
         component={PlantScreen}
@@ -32,6 +43,7 @@ export default function UserTab({ route, navigation }) {
             tabBarShowLabel: false,
           }}
       />
+     
     </Tab.Navigator>
   );
 }
