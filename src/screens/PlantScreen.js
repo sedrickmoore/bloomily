@@ -15,6 +15,7 @@ import {
   FlatList,
   ScrollView,
   Dimensions,
+  Pressable,
 } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { setBackgroundColorAsync } from "expo-system-ui";
@@ -122,7 +123,7 @@ export default function PlantScreen() {
           data={plants}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={[styles.card, { width: screenWidth,}]}>
+            <View style={[styles.card, { width: screenWidth }]}>
               <ScrollView style={styles.card_text_box}>
                 <Text style={styles.body_text}>
                   <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
@@ -160,8 +161,10 @@ export default function PlantScreen() {
                   </Text>{" "}
                   {item.watering_flag}
                 </Text>
+                <Pressable onPress={()=>{console.log(item.plant_ref.common_name + " was watered!")}}>
+                  <Text>Update Watering</Text>
+                </Pressable>
               </ScrollView>
-              
             </View>
           )}
         />
@@ -206,5 +209,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#033500",
     width: "90%",
     borderRadius: 8,
-  }
+  },
 });
