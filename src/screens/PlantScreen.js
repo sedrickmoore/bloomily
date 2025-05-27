@@ -17,6 +17,9 @@ import {
   Dimensions,
   Pressable,
   Image,
+  Platform,
+  Modal,
+  Alert,
 } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { setBackgroundColorAsync } from "expo-system-ui";
@@ -39,6 +42,7 @@ export default function PlantScreen() {
   const [locations, setLocations] = useState([]);
   const [user, setUser] = useState([]);
   const [plantImages, setPlantImages] = useState({});
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // const sound = useRef();
 
@@ -160,7 +164,7 @@ export default function PlantScreen() {
           decelerationRate="fast"
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
-            paddingVertical: "30%",
+            paddingVertical: "18%",
             alignItems: "center",
           }}
           data={plants}
@@ -171,26 +175,49 @@ export default function PlantScreen() {
                 style={[styles.card_text_box]}
                 contentContainerStyle={{ flexGrow: 1 }}
               >
+                <Pressable
+                  onPress={() => {
+                    setMenuOpen(true);
+                    console.log(
+                      "Opening menu for " + item.plant_ref.common_name + "."
+                    );
+                  }}
+                  style={({ pressed }) => [
+                    {
+                      // backgroundColor: pressed ? "#F4A460" : "#B8860B",
+                      // borderRadius: 25,
+                      padding: 15,
+                      alignItems: "center",
+                      width: "15%",
+                      opacity: pressed ? 0.6 : 1,
+                      alignSelf: "flex-end",
+                    },
+                  ]}
+                >
+                  <Ionicons name="menu" size={35} color={"#B8860B"}></Ionicons>
+                </Pressable>
                 <View
                   style={{
                     flex: 1,
                     justifyContent: "center",
                   }}
                 >
-                  <Image
-                    source={
-                      plantImages[item.id] && plantImages[item.id].length > 0
-                        ? { uri: plantImages[item.id] }
-                        : require("../../assets/images/default-plant.png")
-                    }
-                    style={{
-                      width: imageSize,
-                      height: imageSize,
-                      alignSelf: "center",
-                      marginBottom: 25,
-                      borderRadius: 25,
-                    }}
-                  />
+                  <View style={styles.shadowWrapper}>
+                    <Image
+                      source={
+                        plantImages[item.id] && plantImages[item.id].length > 0
+                          ? { uri: plantImages[item.id] }
+                          : require("../../assets/images/default-plant.png")
+                      }
+                      style={{
+                        width: imageSize,
+                        height: imageSize,
+                        borderRadius: 15,
+                        borderWidth: 2,
+                        borderColor: "#B8860B",
+                      }}
+                    />
+                  </View>
 
                   <Text style={styles.body_text}>
                     <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
@@ -241,13 +268,16 @@ export default function PlantScreen() {
                           item.plant_ref.common_name + " was watered!"
                         );
                       }}
-                      style={{
-                        backgroundColor: "#B8860B",
-                        borderRadius: 25,
-                        padding: 15,
-                        alignItems: "center",
-                        width: "15%",
-                      }}
+                      style={({ pressed }) => [
+                        {
+                          backgroundColor: pressed ? "lightblue" : "#B8860B",
+                          borderRadius: 25,
+                          padding: 15,
+                          alignItems: "center",
+                          width: "15%",
+                          opacity: pressed ? 0.6 : 1,
+                        },
+                      ]}
                     >
                       <Ionicons
                         name="water"
@@ -261,13 +291,16 @@ export default function PlantScreen() {
                           item.plant_ref.common_name + " was fertilized!"
                         );
                       }}
-                      style={{
-                        backgroundColor: "#B8860B",
-                        borderRadius: 25,
-                        padding: 15,
-                        alignItems: "center",
-                        width: "15%",
-                      }}
+                      style={({ pressed }) => [
+                        {
+                          backgroundColor: pressed ? "#F4A460" : "#B8860B",
+                          borderRadius: 25,
+                          padding: 15,
+                          alignItems: "center",
+                          width: "15%",
+                          opacity: pressed ? 0.6 : 1,
+                        },
+                      ]}
                     >
                       <Ionicons
                         name="beaker"
@@ -281,19 +314,68 @@ export default function PlantScreen() {
                           item.plant_ref.common_name + " was pruned!"
                         );
                       }}
-                      style={{
-                        backgroundColor: "#B8860B",
-                        borderRadius: 25,
-                        padding: 15,
-                        alignItems: "center",
-                        width: "15%",
-                      }}
+                      style={({ pressed }) => [
+                        {
+                          backgroundColor: pressed ? "orchid" : "#B8860B",
+                          borderRadius: 25,
+                          padding: 15,
+                          alignItems: "center",
+                          width: "15%",
+                          opacity: pressed ? 0.6 : 1,
+                        },
+                      ]}
                     >
                       <Ionicons
                         name="cut"
                         size={25}
                         color={"darkorchid"}
                         style={{ transform: [{ rotate: "90deg" }] }}
+                      ></Ionicons>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        console.log(
+                          item.plant_ref.common_name + " was treated!"
+                        );
+                      }}
+                      style={({ pressed }) => [
+                        {
+                          backgroundColor: pressed ? "red" : "#B8860B",
+                          borderRadius: 25,
+                          padding: 15,
+                          alignItems: "center",
+                          width: "15%",
+                          opacity: pressed ? 0.6 : 1,
+                        },
+                      ]}
+                    >
+                      <Ionicons
+                        name="medkit"
+                        size={25}
+                        color={"darkred"}
+                      ></Ionicons>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        console.log(
+                          item.plant_ref.common_name + " was repotted!"
+                        );
+                      }}
+                      style={({ pressed }) => [
+                        {
+                          backgroundColor: pressed ? "#F4A460" : "#B8860B",
+                          borderRadius: 25,
+                          padding: 15,
+                          alignItems: "center",
+                          width: "15%",
+                          opacity: pressed ? 0.6 : 1,
+                        },
+                      ]}
+                    >
+                      <Ionicons
+                        name="swap-vertical"
+                        size={25}
+                        color={"#8B4513"}
                       ></Ionicons>
                     </Pressable>
                   </View>
@@ -303,6 +385,30 @@ export default function PlantScreen() {
           )}
         />
       </View>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={menuOpen}
+        onRequestClose={() => {
+          setMenuOpen(!menuOpen);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.title}>Menu</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => {
+                Alert.alert("Closing Modal", "Modal has been closed.", [
+                  { text: "OK", style:"destructive", onPress: () => setMenuOpen(!menuOpen) },
+                ]);
+              }}
+            >
+              <Text style={styles.body_text}>Close</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       <StatusBar style="auto" />
     </SafeAreaView>
   );
@@ -344,5 +450,46 @@ const styles = StyleSheet.create({
     backgroundColor: "#033500",
     width: "90%",
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#B8860B",
+  },
+  shadowWrapper: {
+    alignSelf: "center",
+    marginBottom: 25,
+    borderRadius: 15,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#B8860B",
+        shadowOffset: { width: 10, height: 15 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        backgroundColor: "#014421", // or any solid color to make shadow show
+      },
+      android: {
+        elevation: -26,
+        backgroundColor: "#014421", // same as background so it looks seamless
+      },
+    }),
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,.9)",
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "#014421",
+    // borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
   },
 });
