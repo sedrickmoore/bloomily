@@ -22,6 +22,7 @@ import { setBackgroundColorAsync } from "expo-system-ui";
 import { supabase } from "../../lib/supabase";
 import { formatDate } from "../utils/formatDate";
 import { RFValue } from "react-native-responsive-fontsize";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 export default function PlantScreen() {
   const screenWidth = Dimensions.get("window").width;
@@ -161,9 +162,36 @@ export default function PlantScreen() {
                   </Text>{" "}
                   {item.watering_flag}
                 </Text>
-                <Pressable onPress={()=>{console.log(item.plant_ref.common_name + " was watered!")}}>
-                  <Text>Update Watering</Text>
-                </Pressable>
+                <View style={{flex: 1, flexDirection: "row", justifyContent: "space-evenly", paddingTop: 30}}>
+                  <Pressable
+                    onPress={() => {
+                      console.log(item.plant_ref.common_name + " was watered!");
+                    }}
+                    style={{
+                      backgroundColor: "#B8860B",
+                      borderRadius: 25,
+                      padding: 15,
+                      alignItems: "center",
+                      width: "15%",
+                    }}
+                  >
+                    <Ionicons name="water" size={25} color={"blue"}></Ionicons>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      console.log(item.plant_ref.common_name + " was fertilized!");
+                    }}
+                    style={{
+                      backgroundColor: "#B8860B",
+                      borderRadius: 25,
+                      padding: 15,
+                      alignItems: "center",
+                      width: "15%",
+                    }}
+                  >
+                    <Ionicons name="beaker" size={25} color={"brown"}></Ionicons>
+                  </Pressable>
+                </View>
               </ScrollView>
             </View>
           )}
