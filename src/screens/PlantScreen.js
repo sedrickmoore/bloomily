@@ -16,6 +16,7 @@ import {
   ScrollView,
   Dimensions,
   Pressable,
+  Image,
 } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { setBackgroundColorAsync } from "expo-system-ui";
@@ -26,6 +27,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 
 export default function PlantScreen() {
   const screenWidth = Dimensions.get("window").width;
+  const imageSize = screenWidth * 0.5;
 
   const [fontsLoaded] = useFonts({
     PressStart2P: require("../../assets/fonts/PressStart2P-Regular.ttf"),
@@ -35,6 +37,8 @@ export default function PlantScreen() {
 
   const [plants, setPlants] = useState([]);
   const [locations, setLocations] = useState([]);
+  const [user, setUser] = useState([]);
+  const [plantImages, setPlantImages] = useState({});
 
   // const sound = useRef();
 
@@ -58,6 +62,16 @@ export default function PlantScreen() {
   // }, []);
 
   useEffect(() => {
+    const fetchUser = async () => {
+      const { data, error } = await supabase.from("users").select("*");
+
+      if (error) {
+        console.error("Error fetching user:", error.message);
+      } else {
+        setUser(data[0]);
+      }
+    };
+
     const fetchPlants = async () => {
       const { data, error } = await supabase
         .from("plants")
@@ -79,10 +93,40 @@ export default function PlantScreen() {
         setLocations(data);
       }
     };
-
+    fetchUser();
     fetchPlants();
     fetchLocations();
   }, []);
+
+  const getPlantImageUrl = (userId, plantId) => {
+    const bucket = `plants-${userId}`;
+    const url = `https://qoyfucmpjdwjoomqpbru.supabase.co/storage/v1/object/public/${bucket}/${plantId}.jpg`;
+
+    return new Promise((resolve) => {
+      Image.getSize(
+        url,
+        () => resolve(url), // image exists
+        () => resolve(null) // image doesn't exist
+      );
+    });
+  };
+
+  useEffect(() => {
+    if (!user || !user.id || plants.length === 0) return;
+    const fetchImages = async () => {
+      const imageMap = {};
+      for (const plant of plants) {
+        const url = await getPlantImageUrl(user.id, plant.id);
+        if (url) {
+          imageMap[plant.id] = url;
+        }
+      }
+      console.log(imageMap);
+      setPlantImages(imageMap);
+    };
+
+    fetchImages();
+  }, [user, user.id, plants]);
 
   const locationsMap = useMemo(() => {
     const map = new Map();
@@ -116,81 +160,143 @@ export default function PlantScreen() {
           decelerationRate="fast"
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
-            paddingVertical: "50%",
-            // paddingLeft: "10%",
+            paddingVertical: "30%",
             alignItems: "center",
-            // gap: "5%",
           }}
           data={plants}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={[styles.card, { width: screenWidth }]}>
-              <ScrollView style={styles.card_text_box}>
-                <Text style={styles.body_text}>
-                  <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
-                    Name:
-                  </Text>{" "}
-                  {item.nickname || item.plant_ref.common_name}
-                </Text>
-                <Text style={styles.body_text}>
-                  <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
-                    Scientific Name:
-                  </Text>{" "}
-                  {item.plant_ref.scientific_name}
-                </Text>
-                <Text style={styles.body_text}>
-                  <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
-                    Plant Type:
-                  </Text>{" "}
-                  {item.plant_ref.plant_type}
-                </Text>
-                <Text style={styles.body_text}>
-                  <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
-                    Location:
-                  </Text>{" "}
-                  {locationsMap.get(item.location_id)}
-                </Text>
-                <Text style={styles.body_text}>
-                  <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
-                    Last watered:
-                  </Text>{" "}
-                  {item.last_watered ? formatDate(item.last_watered) : "N/A"}
-                </Text>
-                <Text style={styles.body_text}>
-                  <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
-                    Watering Flag:
-                  </Text>{" "}
-                  {item.watering_flag}
-                </Text>
-                <View style={{flex: 1, flexDirection: "row", justifyContent: "space-evenly", paddingTop: 30}}>
-                  <Pressable
-                    onPress={() => {
-                      console.log(item.plant_ref.common_name + " was watered!");
-                    }}
+              <ScrollView
+                style={[styles.card_text_box]}
+                contentContainerStyle={{ flexGrow: 1 }}
+              >
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Image
+                    source={
+                      plantImages[item.id] && plantImages[item.id].length > 0
+                        ? { uri: plantImages[item.id] }
+                        : require("../../assets/images/default-plant.png")
+                    }
                     style={{
-                      backgroundColor: "#B8860B",
+                      width: imageSize,
+                      height: imageSize,
+                      alignSelf: "center",
+                      marginBottom: 25,
                       borderRadius: 25,
-                      padding: 15,
-                      alignItems: "center",
-                      width: "15%",
+                    }}
+                  />
+
+                  <Text style={styles.body_text}>
+                    <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
+                      Name:
+                    </Text>{" "}
+                    {item.nickname || item.plant_ref.common_name}
+                  </Text>
+                  <Text style={styles.body_text}>
+                    <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
+                      Scientific Name:
+                    </Text>{" "}
+                    {item.plant_ref.scientific_name}
+                  </Text>
+                  <Text style={styles.body_text}>
+                    <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
+                      Plant Type:
+                    </Text>{" "}
+                    {item.plant_ref.plant_type}
+                  </Text>
+                  <Text style={styles.body_text}>
+                    <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
+                      Location:
+                    </Text>{" "}
+                    {locationsMap.get(item.location_id)}
+                  </Text>
+                  <Text style={styles.body_text}>
+                    <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
+                      Last watered:
+                    </Text>{" "}
+                    {item.last_watered ? formatDate(item.last_watered) : "N/A"}
+                  </Text>
+                  <Text style={styles.body_text}>
+                    <Text style={{ fontWeight: "bold", color: "#B8860B" }}>
+                      Watering Flag:
+                    </Text>{" "}
+                    {item.watering_flag}
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-evenly",
+                      paddingTop: 30,
                     }}
                   >
-                    <Ionicons name="water" size={25} color={"blue"}></Ionicons>
-                  </Pressable>
-                  <Pressable
-                    onPress={() => {
-                      console.log(item.plant_ref.common_name + " was fertilized!");
-                    }}
-                    style={{
-                      backgroundColor: "#B8860B",
-                      borderRadius: 25,
-                      padding: 15,
-                      alignItems: "center",
-                      width: "15%",
-                    }}
-                  >
-                    <Ionicons name="beaker" size={25} color={"brown"}></Ionicons>
-                  </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        console.log(
+                          item.plant_ref.common_name + " was watered!"
+                        );
+                      }}
+                      style={{
+                        backgroundColor: "#B8860B",
+                        borderRadius: 25,
+                        padding: 15,
+                        alignItems: "center",
+                        width: "15%",
+                      }}
+                    >
+                      <Ionicons
+                        name="water"
+                        size={25}
+                        color={"blue"}
+                      ></Ionicons>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        console.log(
+                          item.plant_ref.common_name + " was fertilized!"
+                        );
+                      }}
+                      style={{
+                        backgroundColor: "#B8860B",
+                        borderRadius: 25,
+                        padding: 15,
+                        alignItems: "center",
+                        width: "15%",
+                      }}
+                    >
+                      <Ionicons
+                        name="beaker"
+                        size={25}
+                        color={"brown"}
+                      ></Ionicons>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        console.log(
+                          item.plant_ref.common_name + " was pruned!"
+                        );
+                      }}
+                      style={{
+                        backgroundColor: "#B8860B",
+                        borderRadius: 25,
+                        padding: 15,
+                        alignItems: "center",
+                        width: "15%",
+                      }}
+                    >
+                      <Ionicons
+                        name="cut"
+                        size={25}
+                        color={"darkorchid"}
+                        style={{ transform: [{ rotate: "90deg" }] }}
+                      ></Ionicons>
+                    </Pressable>
+                  </View>
                 </View>
               </ScrollView>
             </View>
@@ -232,6 +338,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    height: "100%",
   },
   card_text_box: {
     backgroundColor: "#033500",
