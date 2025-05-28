@@ -30,7 +30,7 @@ import CustomAlert from "../utils/customAlert";
 
 export default function PlantScreen() {
   const screenWidth = Dimensions.get("window").width;
-  const imageSize = screenWidth * 0.5;
+  const imageSize = screenWidth * 0.6;
 
   const [fontsLoaded] = useFonts({
     PressStart2P: require("../../assets/fonts/PressStart2P-Regular.ttf"),
@@ -316,7 +316,7 @@ export default function PlantScreen() {
                 )}
                 <View
                   style={{
-                    flex: 1,
+                    // flex: 1,
                     justifyContent: "center",
                   }}
                 >
@@ -328,10 +328,11 @@ export default function PlantScreen() {
                           : require("../../assets/images/default-plant.png")
                       }
                       style={{
-                        width: imageSize,
+                        width: imageSize * 1.25,
                         height: imageSize,
-                        borderRadius: 15,
-                        borderWidth: 2,
+                        // borderRadius: 15,
+                        alignSelf: "center",
+                        borderWidthTop: 1,
                         borderColor: "#B8860B",
                       }}
                     />
@@ -455,8 +456,8 @@ const styles = StyleSheet.create({
     borderColor: "#B8860B",
   },
   shadowWrapper: {
-    alignSelf: "center",
-    marginBottom: 25,
+    top: 20,
+    marginBottom: 45,
     borderRadius: 15,
     ...Platform.select({
       ios: {
@@ -464,11 +465,11 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 10, height: 15 },
         shadowOpacity: 0.3,
         shadowRadius: 10,
-        backgroundColor: "#014421", // or any solid color to make shadow show
+        // backgroundColor: "#014421",
       },
       android: {
         elevation: -26,
-        backgroundColor: "#014421", // same as background so it looks seamless
+        // backgroundColor: "#014421",
       },
     }),
   },
