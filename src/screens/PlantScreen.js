@@ -19,7 +19,6 @@ import {
   Image,
   Platform,
   Modal,
-  Alert,
 } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { setBackgroundColorAsync } from "expo-system-ui";
@@ -27,6 +26,7 @@ import { supabase } from "../../lib/supabase";
 import { formatDate } from "../utils/formatDate";
 import { RFValue } from "react-native-responsive-fontsize";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import CustomAlert from "../utils/customAlert";
 
 export default function PlantScreen() {
   const screenWidth = Dimensions.get("window").width;
@@ -43,6 +43,8 @@ export default function PlantScreen() {
   const [user, setUser] = useState([]);
   const [plantImages, setPlantImages] = useState({});
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [showToolbar, setShowToolbar] = useState(false);
 
   // const sound = useRef();
 
@@ -177,6 +179,9 @@ export default function PlantScreen() {
               >
                 <Pressable
                   onPress={() => {
+                    setShowToolbar(!showToolbar);
+                  }}
+                  onLongPress={() => {
                     setMenuOpen(true);
                     console.log(
                       "Opening menu for " + item.plant_ref.common_name + "."
@@ -184,18 +189,131 @@ export default function PlantScreen() {
                   }}
                   style={({ pressed }) => [
                     {
-                      // backgroundColor: pressed ? "#F4A460" : "#B8860B",
-                      // borderRadius: 25,
-                      padding: 15,
+                      paddingTop: 15,
                       alignItems: "center",
-                      width: "15%",
+                      right: 17,
                       opacity: pressed ? 0.6 : 1,
                       alignSelf: "flex-end",
                     },
                   ]}
                 >
-                  <Ionicons name="menu" size={35} color={"#B8860B"}></Ionicons>
+                  <Ionicons name="menu" size={50} color={"#B8860B"}></Ionicons>
                 </Pressable>
+                {showToolbar && (
+                  <View style={styles.toolbar}>
+                    <Pressable
+                      onPress={() => {
+                        console.log(
+                          item.plant_ref.common_name + " was watered!"
+                        );
+                      }}
+                      style={({ pressed }) => [
+                        {
+                          backgroundColor: pressed ? "lightblue" : "#B8860B",
+                          borderRadius: 15,
+                          padding: 10,
+                          alignItems: "center",
+                          opacity: pressed ? 0.6 : 1,
+                        },
+                      ]}
+                    >
+                      <Ionicons
+                        name="water"
+                        size={25}
+                        color={"blue"}
+                      ></Ionicons>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        console.log(
+                          item.plant_ref.common_name + " was fertilized!"
+                        );
+                      }}
+                      style={({ pressed }) => [
+                        {
+                          backgroundColor: pressed ? "#F4A460" : "#B8860B",
+                          borderRadius: 15,
+                          padding: 10,
+                          alignItems: "center",
+                          opacity: pressed ? 0.6 : 1,
+                        },
+                      ]}
+                    >
+                      <Ionicons
+                        name="beaker"
+                        size={25}
+                        color={"brown"}
+                      ></Ionicons>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        console.log(
+                          item.plant_ref.common_name + " was pruned!"
+                        );
+                      }}
+                      style={({ pressed }) => [
+                        {
+                          backgroundColor: pressed ? "pink" : "#B8860B",
+                          borderRadius: 15,
+                          padding: 10,
+                          alignItems: "center",
+                          opacity: pressed ? 0.6 : 1,
+                        },
+                      ]}
+                    >
+                      <Ionicons
+                        name="cut"
+                        size={25}
+                        color={"darkorchid"}
+                        style={{ transform: [{ rotate: "90deg" }] }}
+                      ></Ionicons>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        console.log(
+                          item.plant_ref.common_name + " was treated!"
+                        );
+                      }}
+                      style={({ pressed }) => [
+                        {
+                          backgroundColor: pressed ? "tomato" : "#B8860B",
+                          borderRadius: 15,
+                          padding: 10,
+                          alignItems: "center",
+                          opacity: pressed ? 0.6 : 1,
+                        },
+                      ]}
+                    >
+                      <Ionicons
+                        name="medkit"
+                        size={25}
+                        color={"darkred"}
+                      ></Ionicons>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        console.log(
+                          item.plant_ref.common_name + " was repotted!"
+                        );
+                      }}
+                      style={({ pressed }) => [
+                        {
+                          backgroundColor: pressed ? "#F4A460" : "#B8860B",
+                          borderRadius: 15,
+                          padding: 10,
+                          alignItems: "center",
+                          opacity: pressed ? 0.6 : 1,
+                        },
+                      ]}
+                    >
+                      <Ionicons
+                        name="swap-vertical"
+                        size={25}
+                        color={"#8B4513"}
+                      ></Ionicons>
+                    </Pressable>
+                  </View>
+                )}
                 <View
                   style={{
                     flex: 1,
@@ -255,130 +373,6 @@ export default function PlantScreen() {
                     </Text>{" "}
                     {item.watering_flag}
                   </Text>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-evenly",
-                      paddingTop: 30,
-                    }}
-                  >
-                    <Pressable
-                      onPress={() => {
-                        console.log(
-                          item.plant_ref.common_name + " was watered!"
-                        );
-                      }}
-                      style={({ pressed }) => [
-                        {
-                          backgroundColor: pressed ? "lightblue" : "#B8860B",
-                          borderRadius: 25,
-                          padding: 15,
-                          alignItems: "center",
-                          width: "15%",
-                          opacity: pressed ? 0.6 : 1,
-                        },
-                      ]}
-                    >
-                      <Ionicons
-                        name="water"
-                        size={25}
-                        color={"blue"}
-                      ></Ionicons>
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        console.log(
-                          item.plant_ref.common_name + " was fertilized!"
-                        );
-                      }}
-                      style={({ pressed }) => [
-                        {
-                          backgroundColor: pressed ? "#F4A460" : "#B8860B",
-                          borderRadius: 25,
-                          padding: 15,
-                          alignItems: "center",
-                          width: "15%",
-                          opacity: pressed ? 0.6 : 1,
-                        },
-                      ]}
-                    >
-                      <Ionicons
-                        name="beaker"
-                        size={25}
-                        color={"brown"}
-                      ></Ionicons>
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        console.log(
-                          item.plant_ref.common_name + " was pruned!"
-                        );
-                      }}
-                      style={({ pressed }) => [
-                        {
-                          backgroundColor: pressed ? "orchid" : "#B8860B",
-                          borderRadius: 25,
-                          padding: 15,
-                          alignItems: "center",
-                          width: "15%",
-                          opacity: pressed ? 0.6 : 1,
-                        },
-                      ]}
-                    >
-                      <Ionicons
-                        name="cut"
-                        size={25}
-                        color={"darkorchid"}
-                        style={{ transform: [{ rotate: "90deg" }] }}
-                      ></Ionicons>
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        console.log(
-                          item.plant_ref.common_name + " was treated!"
-                        );
-                      }}
-                      style={({ pressed }) => [
-                        {
-                          backgroundColor: pressed ? "red" : "#B8860B",
-                          borderRadius: 25,
-                          padding: 15,
-                          alignItems: "center",
-                          width: "15%",
-                          opacity: pressed ? 0.6 : 1,
-                        },
-                      ]}
-                    >
-                      <Ionicons
-                        name="medkit"
-                        size={25}
-                        color={"darkred"}
-                      ></Ionicons>
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        console.log(
-                          item.plant_ref.common_name + " was repotted!"
-                        );
-                      }}
-                      style={({ pressed }) => [
-                        {
-                          backgroundColor: pressed ? "#F4A460" : "#B8860B",
-                          borderRadius: 25,
-                          padding: 15,
-                          alignItems: "center",
-                          width: "15%",
-                          opacity: pressed ? 0.6 : 1,
-                        },
-                      ]}
-                    >
-                      <Ionicons
-                        name="swap-vertical"
-                        size={25}
-                        color={"#8B4513"}
-                      ></Ionicons>
-                    </Pressable>
-                  </View>
                 </View>
               </ScrollView>
             </View>
@@ -399,9 +393,7 @@ export default function PlantScreen() {
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
-                Alert.alert("Closing Modal", "Modal has been closed.", [
-                  { text: "OK", style:"destructive", onPress: () => setMenuOpen(!menuOpen) },
-                ]);
+                setMenuOpen(!menuOpen);
               }}
             >
               <Text style={styles.body_text}>Close</Text>
@@ -409,6 +401,15 @@ export default function PlantScreen() {
           </View>
         </View>
       </Modal>
+
+      <CustomAlert
+        visible={showAlert}
+        title="Saving Plant"
+        message="Your plant has been saved!"
+        onClose={() => {
+          setShowAlert(false);
+        }}
+      />
       <StatusBar style="auto" />
     </SafeAreaView>
   );
@@ -480,7 +481,6 @@ const styles = StyleSheet.create({
   modalView: {
     margin: 20,
     backgroundColor: "#014421",
-    // borderRadius: 20,
     padding: 35,
     alignItems: "center",
     shadowColor: "#000",
@@ -491,5 +491,16 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     justifyContent: "center",
+  },
+  toolbar: {
+    alignItems: "center",
+    zIndex: 100,
+    justifyContent: "space-between",
+    gap: 25,
+    position: "absolute",
+    top: 80,
+    right: 20,
+    flexDirection: "column",
+    alignSelf: "flex-end",
   },
 });
