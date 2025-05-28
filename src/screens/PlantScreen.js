@@ -19,7 +19,6 @@ import {
   Image,
   Platform,
   Modal,
-  Alert,
 } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { setBackgroundColorAsync } from "expo-system-ui";
@@ -27,6 +26,7 @@ import { supabase } from "../../lib/supabase";
 import { formatDate } from "../utils/formatDate";
 import { RFValue } from "react-native-responsive-fontsize";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import CustomAlert from "../utils/customAlert";
 
 export default function PlantScreen() {
   const screenWidth = Dimensions.get("window").width;
@@ -43,6 +43,7 @@ export default function PlantScreen() {
   const [user, setUser] = useState([]);
   const [plantImages, setPlantImages] = useState({});
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
   // const sound = useRef();
 
@@ -399,9 +400,7 @@ export default function PlantScreen() {
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
-                Alert.alert("Closing Modal", "Modal has been closed.", [
-                  { text: "OK", style:"destructive", onPress: () => setMenuOpen(!menuOpen) },
-                ]);
+                setMenuOpen(!menuOpen)
               }}
             >
               <Text style={styles.body_text}>Close</Text>
@@ -409,6 +408,14 @@ export default function PlantScreen() {
           </View>
         </View>
       </Modal>
+      <CustomAlert
+        visible={showAlert}
+        title="Saving Plant"
+        message="Your plant has been saved!"
+        onClose={() => {
+          setShowAlert(false);
+        }}
+      />
       <StatusBar style="auto" />
     </SafeAreaView>
   );
